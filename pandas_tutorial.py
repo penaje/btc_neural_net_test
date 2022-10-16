@@ -1,10 +1,8 @@
 import re
-
-import pandas
 import pandas as pd
 
-pandas.set_option("display.max_columns", None, 'display.max_rows', 0)
-pandas.set_option('display.width', 200)
+pd.set_option("display.max_columns", None, 'display.max_rows', 0)
+pd.set_option('display.width', 200)
 
 df = pd.read_csv('pokemon_data.csv')
 
