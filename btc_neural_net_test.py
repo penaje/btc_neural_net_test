@@ -11,6 +11,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 # Code adapted from: "https://towardsdatascience.com/time-series-forecasting-with-recurrent-neural-networks
 # -74674e289816"
+# and
+# "https://python.plainenglish.io/super-simple-neural-network-for-bitcoin-price-prediction-in-python-8c2cd46d11a7"
 
 # Call out data clean function to return our data frame
 df = data_cleaner.format_data('btc_data_2014_2022.csv')
