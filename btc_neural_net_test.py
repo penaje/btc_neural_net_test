@@ -87,6 +87,7 @@ close_train = close_train.reshape((-1))
 close_test = close_test.reshape((-1))
 prediction = prediction.reshape((-1))
 
+# Make the Final Graph
 trace1 = go.Scatter(x=date_train, y=close_train, mode='lines', name='Data')
 trace2 = go.Scatter(x=date_test, y=prediction, mode='lines', name='Predicted Price')
 trace3 = go.Scatter(x=date_test, y=close_test, mode='lines', name='Actual Price')
