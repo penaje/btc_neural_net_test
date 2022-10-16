@@ -50,16 +50,20 @@ date_train = df.Date[:split]
 date_test = df.Date[split:]
 
 # Look back period is 100 days
-look_back = 45
+look_back = 100
 
 train_generator = TimeseriesGenerator(close_train, close_train, length=look_back, batch_size=32)
 test_generator = TimeseriesGenerator(close_test, close_test, length=look_back, batch_size=1)
 
+# Test Model #1
 model = Sequential()
 model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 1), dropout=0.2))
 model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
 model.add(LSTM(units=32, dropout=0.2))
 model.add(Dense(units=1))
+
+# Test Model #2
+# model = Sequential()
 # model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 1), dropout=.2))
 # model.add(Dense(1))
 
@@ -78,6 +82,6 @@ prediction = prediction.reshape((-1))
 trace1 = go.Scatter(x=date_train, y=close_train, mode='lines', name='Data')
 trace2 = go.Scatter(x=date_test, y=prediction, mode='lines', name='Predicted Price')
 trace3 = go.Scatter(x=date_test, y=close_test, mode='lines', name='Actual Price')
-layout = go.Layout(title="BTC/USDT", xaxis={'title': "Date"}, yaxis={'title': "Close Price"})
+layout = go.Layout(title="BTC/USDT 2014 - 2022", xaxis={'title': "Date"}, yaxis={'title': "Close Price"})
 fig = go.Figure(data=[trace1, trace2, trace3], layout=layout)
 fig.show()
