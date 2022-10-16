@@ -67,6 +67,14 @@ model.add(Dense(units=1))
 # model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 1), dropout=.2))
 # model.add(Dense(1))
 
+# Test Model #3
+# model = Sequential()
+# model.add(LSTM(units=50, activation='relu', return_sequences=True, input_shape=(look_back, 1)))
+# model.add(LSTM(units=60, activation='relu', return_sequences=True, dropout=0.2))
+# model.add(LSTM(units=80, activation='relu', return_sequences=True, dropout=0.3))
+# model.add(LSTM(units=120, activation='relu', dropout=0.4))
+# model.add(Dense(units=1))
+
 model.compile(optimizer='adam', loss='mse')
 
 num_epochs = 50
