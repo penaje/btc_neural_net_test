@@ -18,29 +18,34 @@ df['Date'] = pd.to_datetime(df['Date'], errors='raise')
 df.set_axis(df['Date'], inplace=True)
 df.drop(columns=['Adj Close'], inplace=True)
 
-df.to_csv('multivariate_btc.csv')
-
 print("\nDATAFRAME\n")
-print(df.head(3))
+print(df.head(2))
 
 
-def scale_data(array):
+def scale_data(old_array):
     """Takes a NumPy Array and returns the scaled array in proper format"""
     # Import the Scaler
     scaler = MinMaxScaler(feature_range=(0, 1))
+    new_array = scaler.fit_transform(old_array)
+    new_array = new_array[~np.isnan(new_array)]
+    new_array = new_array.reshape(-1, 1)
 
-    array = scaler.fit_transform(array)
-    array = array[~np.isnan(array)]
-    array = array.reshape(-1, 5)
-
-    return array
+    return new_array
 
 
+# Create the NumPy Arrays
 open_data = df.Open.values.reshape(-1, 1)
 high_data = df.High.values.reshape(-1, 1)
 low_data = df.Low.values.reshape(-1, 1)
 volume_data = df.Volume.values.reshape(-1, 1)
 close_data = df.Close.values.reshape(-1, 1)
+
+# Scale the NumPy Arrays
+open_data = scale_data(open_data)
+high_data = scale_data(high_data)
+low_data = scale_data(low_data)
+volume_data = scale_data(volume_data)
+close_data = scale_data(close_data)
 
 # Combine the data
 combined_data = np.hstack((volume_data, open_data, high_data, low_data, close_data))
@@ -48,37 +53,18 @@ combined_data = np.hstack((volume_data, open_data, high_data, low_data, close_da
 # Create the target data from closing data
 target_data = df.Close.values.reshape(-1, 1)
 
-print("\nBEFORE SCALING\n")
-print(combined_data)
-
-# Scale the combined Data
-scaled_combined_data = scaler.fit_transform(combined_data)
-scaled_combined_data = scaled_combined_data[~np.isnan(scaled_combined_data)]
-scaled_combined_data = scaled_combined_data.reshape(-1, 5)
-
-# Scale the target data
-scaled_target_data = scaler.fit_transform(target_data)
-scaled_target_data = scaled_target_data[~np.isnan(scaled_target_data)]
-scaled_target_data = scaled_target_data.reshape(-1, 1)
-
-print("\nAFTER SCALING : NUMPY ARRAY\n")
-# print(scaled_combined_data)
-print(scaled_target_data)
-
 # Calculate Split Percent
 split_percent = 0.80
-split = int(split_percent * len(scaled_combined_data))
+split = int(split_percent * len(combined_data))
 
 # Split the closing price Numpy array
-close_train = scaled_combined_data[:split]
-close_test = scaled_combined_data[split:]
+close_train = combined_data[:split]
+close_test = combined_data[split:]
 
 # Split the target Data
-target_train = scaled_target_data[:split]
-target_test = scaled_target_data[split:]
+target_train = close_data[:split]
+target_test = close_data[split:]
 
-print('\nCLOSE TRAIN\n')
-print(close_train)
 
 # Split the date data
 date_train = df.Date[:split]
@@ -87,4 +73,4 @@ date_test = df.Date[split:]
 # Look back period is 100 days
 look_back = 14
 
-# train_generator = TimeseriesGenerator(close_train, target_train, length=look_back, batch_size=32)
+train_generator = TimeseriesGenerator(close_train, target_train, length=look_back, batch_size=32)

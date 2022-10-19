@@ -27,7 +27,6 @@ close_data = df.Close.values.reshape((-1, 1))
 scaler = MinMaxScaler(feature_range=(0, 1))
 
 close_data = scaler.fit_transform(close_data)
-
 close_data = close_data[~np.isnan(close_data)]
 close_data = close_data.reshape(-1, 1)
 
