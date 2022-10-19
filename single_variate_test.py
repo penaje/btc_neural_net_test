@@ -6,7 +6,7 @@ from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 import plotly.graph_objects as go
-import data_cleaner
+import helper_functions
 from sklearn.preprocessing import MinMaxScaler
 
 # Code adapted from: "https://towardsdatascience.com/time-series-forecasting-with-recurrent-neural-networks
@@ -15,7 +15,7 @@ from sklearn.preprocessing import MinMaxScaler
 # "https://python.plainenglish.io/super-simple-neural-network-for-bitcoin-price-prediction-in-python-8c2cd46d11a7"
 
 # Call out data clean function to return our data frame
-df = data_cleaner.format_data('btc_data_2014_2022.csv')
+df = helper_functions.format_data('btc_data_2014_2022.csv')
 
 # print("\nDATAFRAME\n")
 # print(df.head(15))

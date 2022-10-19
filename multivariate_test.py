@@ -6,8 +6,8 @@ from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 import plotly.graph_objects as go
-import data_cleaner
 from sklearn.preprocessing import MinMaxScaler
+import helper_functions
 
 pd.set_option("display.max_columns", None, 'display.max_rows', 30)
 pd.set_option('display.width', 150)
@@ -18,18 +18,6 @@ df['Date'] = pd.to_datetime(df['Date'], errors='raise')
 df.set_axis(df['Date'], inplace=True)
 df.drop(columns=['Adj Close'], inplace=True)
 
-
-def scale_data(old_array):
-    """Takes a NumPy Array and returns the scaled array in proper format"""
-    # Import the Scaler
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    new_array = scaler.fit_transform(old_array)
-    new_array = new_array[~np.isnan(new_array)]
-    new_array = new_array.reshape(-1, 1)
-
-    return new_array
-
-
 # Create the NumPy Arrays
 open_data = df.Open.values.reshape(-1, 1)
 high_data = df.High.values.reshape(-1, 1)
@@ -39,13 +27,13 @@ close_data = df.Close.values.reshape(-1, 1)
 
 
 # Scale the NumPy Arrays & Graph Data
-open_data = scale_data(open_data)
-high_data = scale_data(high_data)
-low_data = scale_data(low_data)
-volume_data = scale_data(volume_data)
+open_data = helper_functions.scale_data(open_data)
+high_data = helper_functions.scale_data(high_data)
+low_data = helper_functions.scale_data(low_data)
+volume_data = helper_functions.scale_data(volume_data)
 
 # This is used for the combined data and as the Target Data
-close_data = scale_data(close_data)
+close_data = helper_functions.scale_data(close_data)
 
 # Combine the data
 combined_data = np.hstack((volume_data, open_data, high_data, low_data, close_data))
