@@ -9,10 +9,11 @@ import plotly.graph_objects as go
 from sklearn.preprocessing import MinMaxScaler
 import helper_functions
 
+# Set the Pandas display preferences
 pd.set_option("display.max_columns", None, 'display.max_rows', 30)
 pd.set_option('display.width', 150)
 
-# Call out data clean function to return our data frame
+# Format data how we need it for multivariate
 df = pd.read_csv('btc_data_2014_2022.csv')
 df['Date'] = pd.to_datetime(df['Date'], errors='raise')
 df.set_axis(df['Date'], inplace=True)
@@ -24,7 +25,6 @@ high_data = df.High.values.reshape(-1, 1)
 low_data = df.Low.values.reshape(-1, 1)
 volume_data = df.Volume.values.reshape(-1, 1)
 close_data = df.Close.values.reshape(-1, 1)
-
 
 # Scale the NumPy Arrays & Graph Data
 open_data = helper_functions.scale_data(open_data)
@@ -51,7 +51,6 @@ close_data = close_data[pre_split:]
 split_percent = 0.80
 split = int(split_percent * len(combined_data))
 
-
 # Split the closing price Numpy array
 close_train = combined_data[:split]
 close_test = combined_data[split:]
@@ -65,38 +64,43 @@ date_train = df.Date[:split]
 date_test = df.Date[split:]
 
 # Look back period is 100 days
-look_back = 5
+look_back = 30
 
-for x in range(10):
-    print("CLOSE TRAIN:   ", target_train[x])
+# Prints the first 10 prices, for testing
+# for x in range(10):
+#     print("CLOSE TRAIN:   ", target_train[x])
 
+# Create the training generator
 train_generator = TimeseriesGenerator(close_train, target_train, length=look_back, batch_size=1)
 
-for i in range(3):
-    x, y = train_generator[i]
-    print('%s => %s' % (x, y))
+# Prints the first 3 sets of data in the generator
+# for i in range(3):
+#     x, y = train_generator[i]
+#     print('%s => %s' % (x, y))
 
+# Create the testing data generator
 test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, batch_size=1)
 
 # # Test Model #1
 # model = Sequential()
-# model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 1), dropout=0.2))
+# model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 5), dropout=0.2))
 # model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
 # model.add(LSTM(units=32, dropout=0.2))
 # model.add(Dense(units=1))
 
-# Test Model #2
-model = Sequential()
-model.add(LSTM(units=32, activation='relu', input_shape=(1, 5), dropout=.2))
-model.add(Dense(1))
+# # Test Model #2
+# model = Sequential()
+# model.add(LSTM(units=32, activation='relu', input_shape=(1, 5), dropout=.2))
+# model.add(Dense(1))
+
 
 # Test Model #3
-# model = Sequential()
-# model.add(LSTM(units=50, activation='relu', return_sequences=True, input_shape=(look_back, 1)))
-# model.add(LSTM(units=60, activation='relu', return_sequences=True, dropout=0.2))
-# model.add(LSTM(units=80, activation='relu', return_sequences=True, dropout=0.3))
-# model.add(LSTM(units=120, activation='relu', dropout=0.4))
-# model.add(Dense(units=1))
+model = Sequential()
+model.add(LSTM(units=50, activation='relu', return_sequences=True, input_shape=(look_back, 5)))
+model.add(LSTM(units=60, activation='relu', return_sequences=True, dropout=0.2))
+model.add(LSTM(units=80, activation='relu', return_sequences=True, dropout=0.3))
+model.add(LSTM(units=120, activation='relu', dropout=0.4))
+model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
 
