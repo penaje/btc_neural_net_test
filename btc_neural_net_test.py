@@ -50,22 +50,22 @@ date_train = df.Date[:split]
 date_test = df.Date[split:]
 
 # Look back period is 100 days
-look_back = 100
+look_back = 14
 
 train_generator = TimeseriesGenerator(close_train, close_train, length=look_back, batch_size=32)
 test_generator = TimeseriesGenerator(close_test, close_test, length=look_back, batch_size=1)
 
-# Test Model #1
-model = Sequential()
-model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 1), dropout=0.2))
-model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=32, dropout=0.2))
-model.add(Dense(units=1))
+# # Test Model #1
+# model = Sequential()
+# model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 1), dropout=0.2))
+# model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
+# model.add(LSTM(units=32, dropout=0.2))
+# model.add(Dense(units=1))
 
 # Test Model #2
-# model = Sequential()
-# model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 1), dropout=.2))
-# model.add(Dense(1))
+model = Sequential()
+model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 1), dropout=.2))
+model.add(Dense(1))
 
 # Test Model #3
 # model = Sequential()
@@ -77,7 +77,7 @@ model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
 
-num_epochs = 50
+num_epochs = 20
 
 model.fit(train_generator, epochs=num_epochs, verbose=1)
 
