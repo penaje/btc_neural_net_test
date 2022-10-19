@@ -17,9 +17,9 @@ from sklearn.preprocessing import MinMaxScaler
 # Call out data clean function to return our data frame
 df = data_cleaner.format_data('btc_data_2014_2022.csv')
 
-print("\nDATAFRAME\n")
-print(df.head(15))
-print(df.tail(15))
+# print("\nDATAFRAME\n")
+# print(df.head(15))
+# print(df.tail(15))
 
 # Convert DataFrame in Numpy Array and reshape data for use in the model
 close_data = df.Close.values.reshape((-1, 1))
@@ -30,8 +30,8 @@ close_data = scaler.fit_transform(close_data)
 close_data = close_data[~np.isnan(close_data)]
 close_data = close_data.reshape(-1, 1)
 
-print("\nNUMPY ARRAY\n")
-print(close_data)
+# print("\nNUMPY ARRAY\n")
+# print(close_data)
 
 # Calculate Split Percent
 split_percent = 0.80
@@ -41,17 +41,21 @@ split = int(split_percent * len(close_data))
 close_train = close_data[:split]
 close_test = close_data[split:]
 
-print('\nCLOSE TRAIN\n')
-print(close_train)
+# print('\nCLOSE TRAIN\n')
+# print(close_train)
 
 # Split the date data
 date_train = df.Date[:split]
 date_test = df.Date[split:]
 
-# Look back period is 100 days
-look_back = 14
+# Look back period is 30 days
+look_back = 30
 
-train_generator = TimeseriesGenerator(close_train, close_train, length=look_back, batch_size=32)
+train_generator = TimeseriesGenerator(close_train, close_train, length=look_back, batch_size=1)
+
+# for i in range(1):
+#     x, y = train_generator[i]
+#     print('%s => %s' % (x, y))
 test_generator = TimeseriesGenerator(close_test, close_test, length=look_back, batch_size=1)
 
 # # Test Model #1

@@ -8,7 +8,7 @@ def format_data(filename):
     """Input the csv file name in quotation marks, and it will format the data to be used in the model, returns a
     Pandas Data Frame"""
     df = pd.read_csv(filename)
-    print(df.head(15))
+    # print(df.head(15))
 
     # Convert the date strings into a date in Pandas
     # May need to adjust caps and/or implement to_lowercase or something
@@ -21,7 +21,7 @@ def format_data(filename):
     # Remove other columns except the date
     df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'], inplace=True)
 
-    print("\nData Cleaned\n")
+    # print("\nData Cleaned\n")
 
     return df
 
