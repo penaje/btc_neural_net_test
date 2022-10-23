@@ -43,41 +43,13 @@ close_data = helper_functions.scale_data(close_data)
 # Combine the data
 combined_data = np.hstack((volume_data, open_data, high_data, low_data, close_data))
 
-print("COMBINED DATA:", combined_data)
-#
-# # Create the prediction data from the last 45 days of price data
-# test_generator = TimeseriesGenerator(combined_data, close_data, length=look_back, batch_size=1)
-#
-# print("\nGENERATOR: ")
-# # Prints the first 3 sets of data in the generator
-# for i in range(len(test_generator)):
-#     x, y = test_generator[i]
-#     print('%s => %s' % (x, y))
-
 # Load in our model
 model = load_model('test_model.h5')
 
-# # Run the prediction
-# prediction = model.predict(test_generator)
-#
-# print(prediction)
-#
-# # Unscale the prediction
-# prediction = helper_functions.unscale_data(prediction).reshape((-1))
-#
-#
-# print("\nTomorrows Predicted Price is: ", prediction)
-
-print(df)
-# TRy it another way
-print(combined_data.shape)
 last_period_data = combined_data.reshape((1, look_back, 5))
-print("NEW DATA FORMAT: ", last_period_data)
 
-print("WHAT IS THIS", last_period_data[0][None])
 new_prediction = model.predict(last_period_data[0][None])
 
-print(new_prediction)
 new_prediction = helper_functions.unscale_data(new_prediction).reshape((-1))
 
 predication_as_int = new_prediction.astype(float)
