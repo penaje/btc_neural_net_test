@@ -74,7 +74,7 @@ class TradeBot:
         return self._client.get_symbol_ticker(symbol=asset)['price']
 
     def get_btc_data_csv(self, num_days):
-        """Get the designated number of days past data, return a data frame"""
+        """Get the designated number of days past data, add data frame into the bot"""
         data = pd.read_csv(
             'https://query1.finance.yahoo.com/v7/finance/download/BTC-USD?period1=1635010346&period2=1666546346'
             '&interval=1d&events=history&includeAdjustedClose=true')
@@ -85,12 +85,12 @@ class TradeBot:
         self._price_data = df
 
     def add_prediction_model(self, fileName):
-        """Returns the prediction model"""
+        """Add the model into the bot"""
         # Load in our model
         self._model = load_model(fileName)
 
     def get_tomorrows_price(self):
-        """Returns tomorrows price after loading the model and dataframe"""
+        """prints and returns tomorrows price after loading the model and dataframe"""
 
         look_back = 45
 
@@ -119,13 +119,14 @@ class TradeBot:
 
         new_prediction = helper_functions.unscale_data(new_prediction).reshape((-1))
 
-        predication_as_int = new_prediction.astype(float)
+        predication_as_float = new_prediction.astype(float)
 
-        print("Tomorrow Price Prediction: ", predication_as_int[0])
+        print("Tomorrow Price Prediction: ", predication_as_float[0])
+        return predication_as_float[0]
 
 
 bot1 = TradeBot()
 bot1.set_keys(api_public, api_secret)
 bot1.get_btc_data_csv(45)
-bot1.add_prediction_model('test_model.h5')
+bot1.add_prediction_model('new_test_model_75.h5')
 bot1.get_tomorrows_price()

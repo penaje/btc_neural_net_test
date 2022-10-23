@@ -14,10 +14,12 @@ pd.set_option("display.max_columns", None, 'display.max_rows', 30)
 pd.set_option('display.width', 150)
 
 # Format data how we need it for multivariate
-df = pd.read_csv('btc_data_2014_2022.csv')
+df = pd.read_csv('')
 df['Date'] = pd.to_datetime(df['Date'], errors='raise')
 df.set_axis(df['Date'], inplace=True)
 df.drop(columns=['Adj Close'], inplace=True)
+
+print(df)
 
 # Create the NumPy Arrays
 open_data = df.Open.values.reshape(-1, 1)
@@ -38,14 +40,14 @@ close_data = helper_functions.scale_data(close_data)
 # Combine the data
 combined_data = np.hstack((volume_data, open_data, high_data, low_data, close_data))
 
-## ***THIS PRE CLIPPING CAN BE REMOVED IF I GET A DIFFERENT .CSV FILE***
-# Remove the front 25%, price doesn't move much before 2017
-pre_split_percent = 0.25
-pre_split = int(pre_split_percent * len(combined_data))
-
-# Clip the combined data and target data
-combined_data = combined_data[pre_split:]
-close_data = close_data[pre_split:]
+# ## ***THIS PRE CLIPPING CAN BE REMOVED IF I GET A DIFFERENT .CSV FILE***
+# # Remove the front 25%, price doesn't move much before 2017
+# pre_split_percent = 0.25
+# pre_split = int(pre_split_percent * len(combined_data))
+#
+# # Clip the combined data and target data
+# combined_data = combined_data[pre_split:]
+# close_data = close_data[pre_split:]
 
 # Calculate Split Percent for the Training and Test partitioning
 split_percent = 0.80
@@ -63,8 +65,8 @@ target_test = close_data[split:]
 date_train = df.Date[:split]
 date_test = df.Date[split:]
 
-# Look back period is 100 days
-look_back = 45
+# Look back period
+look_back = 60
 
 # Prints the first 10 prices, for testing
 # for x in range(10):
@@ -92,27 +94,28 @@ test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, 
 
 # # Test Model #2
 # model = Sequential()
-# model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 5), dropout=.2))
+# model.add(LSTM(units=32, activation='relu', return_sequences=True, input_shape=(look_back, 5), dropout=.2))
+# model.add(LSTM(units=32, activation='relu', dropout=0.2))
 # model.add(Dense(1))
 
 
 # Test Model #3
 model = Sequential()
-model.add(LSTM(units=50, return_sequences=True, input_shape=(look_back, 5)))
-model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=50, dropout=0.2))
+model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 5)))
+model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=32, dropout=0.2))
 model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
 model.summary()
 
-num_epochs = 25
+num_epochs = 10
 
 model.fit(train_generator, epochs=num_epochs, verbose=1)
 
-model.save('test_model.h5')
+#model.save('amd_test_model.h5')
 
 prediction = model.predict(test_generator)
 
