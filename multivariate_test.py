@@ -64,11 +64,13 @@ date_train = df.Date[:split]
 date_test = df.Date[split:]
 
 # Look back period is 100 days
-look_back = 30
+look_back = 45
 
 # Prints the first 10 prices, for testing
 # for x in range(10):
 #     print("CLOSE TRAIN:   ", target_train[x])
+
+print(close_train.shape)
 
 # Create the training generator
 train_generator = TimeseriesGenerator(close_train, target_train, length=look_back, batch_size=1)
@@ -83,36 +85,37 @@ test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, 
 
 # # Test Model #1
 # model = Sequential()
-# model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 5), dropout=0.2))
-# model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
-# model.add(LSTM(units=32, dropout=0.2))
+# model.add(LSTM(units=32, return_sequences=True, activation='relu', input_shape=(look_back, 5), dropout=0.2))
+# model.add(LSTM(units=32, return_sequences=True, activation='relu', dropout=0.2))
+# model.add(LSTM(units=32, activation='relu', dropout=0.2))
 # model.add(Dense(units=1))
 
 # # Test Model #2
 # model = Sequential()
-# model.add(LSTM(units=32, activation='relu', input_shape=(1, 5), dropout=.2))
+# model.add(LSTM(units=32, activation='relu', input_shape=(look_back, 5), dropout=.2))
 # model.add(Dense(1))
 
 
 # Test Model #3
 model = Sequential()
-model.add(LSTM(units=50, activation='relu', return_sequences=True, input_shape=(look_back, 5)))
-model.add(LSTM(units=60, activation='relu', return_sequences=True, dropout=0.2))
-model.add(LSTM(units=80, activation='relu', return_sequences=True, dropout=0.3))
-model.add(LSTM(units=120, activation='relu', dropout=0.4))
+model.add(LSTM(units=50, return_sequences=True, input_shape=(look_back, 5)))
+model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=50, dropout=0.2))
 model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
+model.summary()
 
-num_epochs = 10
+num_epochs = 1
 
 model.fit(train_generator, epochs=num_epochs, verbose=1)
 
 prediction = model.predict(test_generator)
 
-close_train = target_train.reshape((-1))
-close_test = target_test.reshape((-1))
-prediction = prediction.reshape((-1))
+# TEST UNSCALE
+close_train = helper_functions.unscale_data(target_train).reshape((-1))
+close_test = helper_functions.unscale_data(target_test).reshape((-1))
+prediction = helper_functions.unscale_data(prediction).reshape((-1))
 
 # Make the Final Graph
 trace1 = go.Scatter(x=date_train, y=close_train, mode='lines', name='Data')

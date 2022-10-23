@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
+scaler = MinMaxScaler(feature_range=(0, 1))
+
 pd.set_option("display.max_columns", None, 'display.max_rows', 25)
 pd.set_option('display.width', 100)
 
@@ -27,10 +29,10 @@ def format_data(filename):
 
     return df
 
+
 def scale_data(old_array):
     """Takes a NumPy Array and returns the scaled array in proper format"""
     # Import the Scaler
-    scaler = MinMaxScaler(feature_range=(0, 1))
     new_array = scaler.fit_transform(old_array)
     new_array = new_array[~np.isnan(new_array)]
     new_array = new_array.reshape(-1, 1)
@@ -38,3 +40,7 @@ def scale_data(old_array):
     return new_array
 
 
+def unscale_data(data):
+    """Unscale the data"""
+    data = scaler.inverse_transform(data)
+    return data
