@@ -100,15 +100,19 @@ test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, 
 model = Sequential()
 model.add(LSTM(units=50, return_sequences=True, input_shape=(look_back, 5)))
 model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
+model.add(LSTM(units=50, return_sequences=True, dropout=0.2))
 model.add(LSTM(units=50, dropout=0.2))
 model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
 model.summary()
 
-num_epochs = 1
+num_epochs = 25
 
 model.fit(train_generator, epochs=num_epochs, verbose=1)
+
+model.save('test_model.h5')
 
 prediction = model.predict(test_generator)
 
