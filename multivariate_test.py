@@ -4,7 +4,7 @@ import keras
 import tensorflow as tf
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense, Dropout
 import plotly.graph_objects as go
 from sklearn.preprocessing import MinMaxScaler
 import helper_functions
@@ -14,7 +14,7 @@ pd.set_option("display.max_columns", None, 'display.max_rows', 30)
 pd.set_option('display.width', 150)
 
 # Format data how we need it for multivariate
-df = pd.read_csv('')
+df = pd.read_csv('btc_2014_to_10_23.csv')
 df['Date'] = pd.to_datetime(df['Date'], errors='raise')
 df.set_axis(df['Date'], inplace=True)
 df.drop(columns=['Adj Close'], inplace=True)
@@ -66,7 +66,7 @@ date_train = df.Date[:split]
 date_test = df.Date[split:]
 
 # Look back period
-look_back = 60
+look_back = 5
 
 # Prints the first 10 prices, for testing
 # for x in range(10):
@@ -78,9 +78,9 @@ print(close_train.shape)
 train_generator = TimeseriesGenerator(close_train, target_train, length=look_back, batch_size=1)
 
 # Prints the first 3 sets of data in the generator
-# for i in range(3):
-#     x, y = train_generator[i]
-#     print('%s => %s' % (x, y))
+for i in range(3):
+    x, y = train_generator[i]
+    print('%s => %s' % (x, y))
 
 # Create the testing data generator
 test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, batch_size=1)
@@ -92,30 +92,22 @@ test_generator = TimeseriesGenerator(close_test, target_test, length=look_back, 
 # model.add(LSTM(units=32, activation='relu', dropout=0.2))
 # model.add(Dense(units=1))
 
-# # Test Model #2
-# model = Sequential()
-# model.add(LSTM(units=32, activation='relu', return_sequences=True, input_shape=(look_back, 5), dropout=.2))
-# model.add(LSTM(units=32, activation='relu', dropout=0.2))
-# model.add(Dense(1))
-
-
 # Test Model #3
 model = Sequential()
-model.add(LSTM(units=32, return_sequences=True, input_shape=(look_back, 5)))
-model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=32, return_sequences=True, dropout=0.2))
-model.add(LSTM(units=32, dropout=0.2))
+model.add(LSTM(units=256, return_sequences=True, input_shape=(look_back, 5)))
+model.add(Dropout(rate=.20))
+model.add(LSTM(units=256))
+model.add(Dropout(rate=.20))
 model.add(Dense(units=1))
 
 model.compile(optimizer='adam', loss='mse')
 model.summary()
 
-num_epochs = 10
+num_epochs = 25
 
 model.fit(train_generator, epochs=num_epochs, verbose=1)
 
-#model.save('amd_test_model.h5')
+model.save('btc_1029.h5')
 
 prediction = model.predict(test_generator)
 
